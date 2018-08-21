@@ -19,10 +19,30 @@ namespace world
     {
         static void Main(string[] args)
         {
+            //REAd configuration file into string
+            string filecontent = ReadConfigurationFile("cities.json");
+            //parse filecontent
+
+            CityConfig[] cityConfigArray = new JavaScriptSerializer().Deserialize<CityConfig[]>(filecontent);
             weather weather = new weather();
-            float tempkdp = weather.GetCurrentTemperature("kadapa", "in");
-            Console.WriteLine("temperature :  " + tempkdp);
+            foreach (CityConfig cityConfig in cityConfigArray)
+            {
+                Console.WriteLine(cityConfig.city);
+                
+                float tempkdp = weather.GetCurrentTemperature(cityConfig.city, cityConfig.countrycode);
+                Console.WriteLine("temperature :  " + tempkdp);
+            }
+           
             Console.ReadKey();
+
+
+        }
+        static string ReadConfigurationFile(string configFileName) 
+        {
+          string content=@"[{""city"": ""kadapa"",""countryCode"": ""IN""},{""city"": ""boston"",""countryCode"": ""US""},{""city"": ""london"",""countryCode"": ""UK""}]";
+            //TODO remove hardcoding of content 
+
+           return content;
         }
     }
 }
