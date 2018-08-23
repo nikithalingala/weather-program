@@ -11,6 +11,8 @@ using System.Globalization;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using System.Xaml;
+using System.IO;
+using System.Runtime.Serialization.Json;
 
 
 namespace world
@@ -28,7 +30,7 @@ namespace world
             foreach (CityConfig cityConfig in cityConfigArray)
             {
                 Console.WriteLine(cityConfig.city);
-                
+              
                 float tempkdp = weather.GetCurrentTemperature(cityConfig.city, cityConfig.countrycode);
                 Console.WriteLine("temperature :  " + tempkdp);
             }
@@ -39,10 +41,13 @@ namespace world
         }
         static string ReadConfigurationFile(string configFileName) 
         {
-          string content=@"[{""city"": ""kadapa"",""countryCode"": ""IN""},{""city"": ""boston"",""countryCode"": ""US""},{""city"": ""london"",""countryCode"": ""UK""}]";
+          
             //TODO remove hardcoding of content 
+          string JSONstring = File.ReadAllText("E:/c#/weatherProgram/world/cities.json");
 
-           return content;
+                
+           return JSONstring ;
+               
         }
     }
 }
