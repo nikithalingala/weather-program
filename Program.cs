@@ -27,8 +27,8 @@ namespace world
             //parse filecontent
 
             CityConfig[] cityConfigArray = new JavaScriptSerializer().Deserialize<CityConfig[]>(filecontent);
-            weather weather = new weather();
-            
+            Weather weather = new Weather();
+          Console.WriteLine(weather.str);
 
             foreach (CityConfig cityConfig in cityConfigArray)
             {
@@ -38,23 +38,29 @@ namespace world
                 Console.WriteLine("temperature :  " + tempkdp);
                 //body
                 // HttpClient post
-                string url = "http://api.openweathermap.org/data/2.5/weather?q=" + cityConfig.city + "," + cityConfig.countrycode + "&APPID=6eb1b56a44171680a7ac1497d62dedb6";
-                HttpClient client = new HttpClient();
-                client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
 
-                StringContent content = new StringContent(filecontent);
-               
-                content.Headers.Clear();
-                content.Headers.Add("Content-Type", "application/json");
+                HttpClient httpClient= new HttpClient();
+                // (httpClient.DefaultRequestHeaders).Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+             HttpRequestHeaders httpRequestHeaders= httpClient.DefaultRequestHeaders; 
+               // HttpHeaderValueCollection<MediaTypeWithQualityHeaderValue> httpHeaderValueCollection = httpRequestHeaders.Accept;
+              //  MediaTypeWithQualityHeaderValue mediaTypeWithQualityHeaderValue = new MediaTypeWithQualityHeaderValue("application/json");
+              //  httpHeaderValueCollection.Add(mediaTypeWithQualityHeaderValue);
+                httpRequestHeaders.Add("X-Insert-Key", "jzsjmfl5Qmntrkfrn28XL5VOTVkYU3ju");
+               // httpRequestHeaders.Add("Content-Type", "application/json");
+                httpRequestHeaders.Add("xyz", "abc");
 
-                HttpResponseMessage response = client.PostAsync("http://api.openweathermap.org/data/2.5/weather?q=" + cityConfig.city + "," + cityConfig.countrycode + "&APPID=6eb1b56a44171680a7ac1497d62dedb6", content).Result;
-                if (response.IsSuccessStatusCode)
+                StringContent content = new StringContent("[{\"city\":\""+cityConfig.city+"\", \"countryCode\":\""+cityConfig.countrycode+"\" , \"eventType\":\"Temperature\" , \"temperature\":" + tempkdp+"}]",Encoding.UTF8, "application/json");
+                Console.WriteLine(content.ReadAsStringAsync().Result);
+                content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
+             var result = httpClient.PostAsync("https://insights-collector.newrelic.com/v1/accounts/1245525/events", content).Result;
+               if( result.IsSuccessStatusCode)
                 {
-                    DataContractJsonSerializer json = new DataContractJsonSerializer(typeof(CityConfig));
-                    
-                    string responseBody = response.Content.ReadAsStringAsync().Result;
-                    CityConfig Response = (CityConfig)json.ReadObject(response.Content.ReadAsStreamAsync().Result);
-                   Console.WriteLine(response);
+                    Console.WriteLine("SUCCESSFULLY POSTED DATA TO NEWRELIC");
+                }
+                else
+                {
+                    Console.WriteLine("FAILED TO SNED");
+                    Console.WriteLine(result.ReasonPhrase);
                 }
             }
 

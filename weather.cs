@@ -16,7 +16,7 @@ using System.Runtime.Serialization.Json;
 
 namespace world
 {
-    class weather
+    class Weather
     {
 
         public float GetCurrentTemperature(string city, string countrycode)
@@ -28,6 +28,7 @@ namespace world
             exampleModel s = new JavaScriptSerializer().Deserialize<exampleModel>(getUrlResult);
             return s.main.temp;
         }
+        public string str = "hello";
     }
     class exampleModel
     {
